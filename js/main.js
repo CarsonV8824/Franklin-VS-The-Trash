@@ -75,6 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
+        if (franklinX < 0) franklinX = 0;
+        if (franklinX + 100 > canvas.width) franklinX = canvas.width - 100;
+        if (franklinY < 0) franklinY = 0;
+        if (franklinY + 100 > canvas.height) franklinY = canvas.height - 100;
+
         drawTrash();
         requestAnimationFrame(main);
     }
