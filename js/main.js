@@ -191,6 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
     bagImage.src = "images/bag.png";
     bottleImage.src = "images/bottle.png";
     strawImage.src = "images/straw.png";
-    franklinImage.src = "images/franklin.png";
+    franklinImage.src = "images/Franklin.png";
     shrimpImage.src = "images/shrimp.png";
 });
