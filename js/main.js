@@ -3,13 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const ctx = canvas.getContext("2d");
 
     const bagImage = new Image();
-    bagImage.src = "images/bag.png";
-
     const bottleImage = new Image();
-    bottleImage.src = "images/bottle.png";
-
     const strawImage = new Image();
-    strawImage.src = "images/straw.png";
+    const franklinImage = new Image();
+    const shrimpImage = new Image();
 
     const trashImages = [bagImage, bottleImage, strawImage];
         
@@ -28,9 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    squares.push(createTrash(1, 50, 50, 2));
-    squares.push(createTrash(2, 150, 100, 2));
-    squares.push(createTrash(3, 250, 75, 2));
+    for (let i = 0; i < 5; i++) {
+        const x = Math.random() * (canvas.width/5);
+        const y = Math.random() * (canvas.height);
+        squares.push(createTrash(i, x, y, 2));
+    }
 
     function drawTrash() {
         if (bagImage.complete && bottleImage.complete && strawImage.complete) {
@@ -40,12 +39,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    const franklinImage = new Image();
-    franklinImage.src = "images/franklin.png";
+    function createShrimp(x, y) {
+        return {
+            x: x,
+            y: y,
+            width: 50,
+            height: 50,
+        };
+    }  
+
+    let shrimps = [];
+    for (let i = 0; i < 2; i++) {
+        shrimps.push(createShrimp(Math.random() * (canvas.width - 50), Math.random() * (canvas.height - 50)));
+    }
+
+    function drawShrimps() {
+        if (shrimpImage.complete){
+            shrimps.forEach(shrimp => {
+                ctx.drawImage(shrimpImage, shrimp.x, shrimp.y, shrimp.width, shrimp.height);
+            });
+        }
+    }
+
     let franklinX = canvas.width / 2 - 50;
     let franklinY = canvas.height - 120;
     
-    // Track which keys are currently pressed
     const keysPressed = {};
     
     window.addEventListener('keydown', (e) => {
@@ -56,9 +74,14 @@ document.addEventListener("DOMContentLoaded", () => {
         keysPressed[e.key.toLowerCase()] = false;
     });
 
-
     let lives = 3;
     const lifeDisplay = document.getElementById("lives");
+
+    let score = 0;
+    const scoreDisplay = document.getElementById("score");
+
+    let deltaSpeedX = 2;
+
     function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -66,11 +89,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (keysPressed['s']) franklinY += 5;
         if (keysPressed['a']) franklinX -= 5;
         if (keysPressed['d']) franklinX += 5;
-
-        ctx.drawImage(franklinImage, franklinX, franklinY, 100, 100);
-
+        
+        if (franklinImage.complete) {
+            ctx.drawImage(franklinImage, franklinX, franklinY, 100, 100);
+        }  
+       
         squares.forEach(square => {
-            square.x += square.speedX;
+            square.x += deltaSpeedX;
 
             if (square.x <= 0 || square.x + square.width >= canvas.width) {
                 square.x = 0;  
@@ -81,11 +106,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 lifeDisplay.textContent = `Lives: ${lives}`;
                 franklinX = canvas.width / 2 - 50;
                 franklinY = canvas.height - 120;
-            if (lives <= 0) {
-                window.location.href = "gameover.html";
-        }
+                if (lives <= 0) {
+                    window.location.href = "gameover.html";
+                }
             }
         });
+
+        
+        shrimps.forEach((shrimp, index) => {
+            shrimp.x += deltaSpeedX;
+            if (shrimp.x > canvas.width) {
+                shrimp.x = 0;
+                shrimp.y = Math.random() * (canvas.height - shrimp.height);
+            }
+            if (Math.abs((franklinX + 50) - (shrimp.x + 25)) < 50 && Math.abs((franklinY + 50) - (shrimp.y + 25)) < 50) {
+                score+=10;
+                deltaSpeedX = Math.min(deltaSpeedX ** 1.05, 10); // Increase speed up to a max of 10
+                scoreDisplay.textContent = `Score: ${score}`;
+                shrimps.splice(index, 1); // Remove collected shrimp
+                shrimps.push(createShrimp(0, Math.random() * (canvas.height - 50))); // Add a new shrimp
+            }
+        });
+       
 
         if (franklinX < 0) franklinX = 0;
         if (franklinX + 100 > canvas.width) franklinX = canvas.width - 100;
@@ -93,9 +135,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (franklinY + 100 > canvas.height) franklinY = canvas.height - 100;
 
         drawTrash();
-        requestAnimationFrame(main);
+        drawShrimps();
+        requestAnimationFrame(main);  // Call continuously
     }
 
+    // Load images
     let imagesLoaded = 0;
     const allImages = [bagImage, bottleImage, strawImage, franklinImage];
 
@@ -103,8 +147,23 @@ document.addEventListener("DOMContentLoaded", () => {
         img.onload = () => {
             imagesLoaded++;
             if (imagesLoaded === allImages.length) {
-                requestAnimationFrame(main);
+                main();  // Start animation once required images load
             }
         };
+        
+        img.onerror = () => {
+            console.error("Failed to load image");
+        };
     });
+
+    // Load shrimp separately (don't block animation)
+    shrimpImage.onerror = () => {
+        console.error("Failed to load shrimp image");
+    };
+
+    bagImage.src = "images/bag.png";
+    bottleImage.src = "images/bottle.png";
+    strawImage.src = "images/straw.png";
+    franklinImage.src = "images/franklin.png";
+    shrimpImage.src = "images/shrimp.png";
 });
