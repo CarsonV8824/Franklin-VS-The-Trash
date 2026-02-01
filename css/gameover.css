@@ -1,0 +1,69 @@
+.title {
+    text-align: center;
+    font-size: 36px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin-top: 20px;
+}
+
+.finalScore {
+    text-align: center;
+    font-size: 26px;
+    font-family: 'Arial', sans-serif;
+    color: #444;
+    margin-top: 10px;
+}
+
+.enterName {
+    text-align: center;
+    font-size: 22px;
+    font-family: 'Arial', sans-serif;
+    color: #555;
+    margin-top: 15px;
+}
+
+.nameInput {
+    display: block;
+    margin: 10px auto;
+    padding: 8px;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.submitScoreButton {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.changePageButton {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pastScores {
+    list-style-type: none;
+    padding: 0;
+    max-width: 300px;
+    margin: 20px auto;
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+}

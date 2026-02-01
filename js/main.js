@@ -82,6 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let deltaSpeedX = 2;
 
+    let isInvincible = false;
+    let invincibleUntil = 0;
+
     function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -90,10 +93,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (keysPressed['a']) franklinX -= 5;
         if (keysPressed['d']) franklinX += 5;
         
+        // Check if invincibility period is over
+        if (isInvincible && Date.now() > invincibleUntil) {
+            isInvincible = false;
+        }
+        
+        // Optional: make Franklin blink when invincible
         if (franklinImage.complete) {
-            ctx.drawImage(franklinImage, franklinX, franklinY, 100, 100);
+            if (!isInvincible || Math.floor(Date.now() / 200) % 2 === 0) {
+                ctx.drawImage(franklinImage, franklinX, franklinY, 100, 100);
+            }
         }  
-       
+    
         squares.forEach(square => {
             square.x += deltaSpeedX;
 
@@ -101,12 +112,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 square.x = 0;  
                 square.imageIndex = Math.floor(Math.random() * trashImages.length);
             }
-            if (Math.abs((franklinX + 50) - (square.x + 50)) < 50 && Math.abs((franklinY + 50) - (square.y + 50)) < 50) {
+            
+            // Only check collision if not invincible
+            if (!isInvincible && Math.abs((franklinX + 50) - (square.x + 50)) < 50 && Math.abs((franklinY + 50) - (square.y + 50)) < 50) {
                 lives--;
                 lifeDisplay.textContent = `Lives: ${lives}`;
                 franklinX = canvas.width / 2 - 50;
                 franklinY = canvas.height - 120;
+                
+                // Set invincibility for 2 seconds
+                isInvincible = true;
+                invincibleUntil = Date.now() + 2000;
+                
                 if (lives <= 0) {
+                    try {
+                        const pastScores = JSON.parse(localStorage.getItem("pastScores")) || [];
+                        pastScores.push(score);
+                        localStorage.setItem("pastScores", JSON.stringify(pastScores));
+                    } catch (error) {
+                        const pastScores = [];
+                        pastScores.push(score);
+                        localStorage.setItem("pastScores", JSON.stringify(pastScores));
+                    }
                     window.location.href = "gameover.html";
                 }
             }
@@ -121,13 +148,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (Math.abs((franklinX + 50) - (shrimp.x + 25)) < 50 && Math.abs((franklinY + 50) - (shrimp.y + 25)) < 50) {
                 score+=10;
-                deltaSpeedX = Math.min(deltaSpeedX ** 1.05, 10); // Increase speed up to a max of 10
+                deltaSpeedX = Math.min(deltaSpeedX ** 1.05, 10);
                 scoreDisplay.textContent = `Score: ${score}`;
-                shrimps.splice(index, 1); // Remove collected shrimp
-                shrimps.push(createShrimp(0, Math.random() * (canvas.height - 50))); // Add a new shrimp
+                shrimps.splice(index, 1);
+                shrimps.push(createShrimp(0, Math.random() * (canvas.height - 50)));
             }
         });
-       
+    
 
         if (franklinX < 0) franklinX = 0;
         if (franklinX + 100 > canvas.width) franklinX = canvas.width - 100;
@@ -136,25 +163,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         drawTrash();
         drawShrimps();
-        requestAnimationFrame(main);  // Call continuously
+        requestAnimationFrame(main);
     }
 
-    // Load images
-    let imagesLoaded = 0;
-    const allImages = [bagImage, bottleImage, strawImage, franklinImage];
+        // Load images
+        let imagesLoaded = 0;
+        const allImages = [bagImage, bottleImage, strawImage, franklinImage, shrimpImage];
 
-    allImages.forEach(img => {
-        img.onload = () => {
-            imagesLoaded++;
-            if (imagesLoaded === allImages.length) {
-                main();  // Start animation once required images load
-            }
-        };
-        
-        img.onerror = () => {
-            console.error("Failed to load image");
-        };
-    });
+        allImages.forEach(img => {
+            img.onload = () => {
+                imagesLoaded++;
+                if (imagesLoaded === allImages.length) {
+                    main();  // Start animation once required images load
+                }
+            };
+            
+            img.onerror = () => {
+                console.error("Failed to load image");
+            };
+        });
 
     // Load shrimp separately (don't block animation)
     shrimpImage.onerror = () => {
