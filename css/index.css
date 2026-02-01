@@ -16,7 +16,7 @@
 
 .myCanvas {
     border: 2px solid #000;
-    background-color: #f0f0f0;
+    background-color: rgb(89, 158, 219);
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     display: block;
