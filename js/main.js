@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const trashImages = [bagImage, bottleImage, strawImage];
         
-    let squares = [];
+    let trash = [];
 
     function createTrash(id, x, y, speedX=30) {
         return {
@@ -28,13 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < 5; i++) {
         const x = Math.random() * (canvas.width/5);
         const y = Math.random() * (canvas.height);
-        squares.push(createTrash(i, x, y, 2));
+        trash.push(createTrash(i, x, y, 2));
     }
 
     function drawTrash() {
         if (bagImage.complete && bottleImage.complete && strawImage.complete) {
-            squares.forEach(square => {
-                ctx.drawImage(trashImages[square.imageIndex % trashImages.length], square.x, square.y, square.width, square.height);
+            trash.forEach(trashItem => {
+                ctx.drawImage(trashImages[trashItem.imageIndex % trashImages.length], trashItem.x, trashItem.y, trashItem.width, trashItem.height);
             });
         }
     }
@@ -105,16 +105,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }  
     
-        squares.forEach(square => {
-            square.x += deltaSpeedX;
+        trash.forEach(trashItem => {
+            trashItem.x += deltaSpeedX;
 
-            if (square.x <= 0 || square.x + square.width >= canvas.width) {
-                square.x = 0;  
-                square.imageIndex = Math.floor(Math.random() * trashImages.length);
+            if (trashItem.x <= 0 || trashItem.x + trashItem.width >= canvas.width) {
+                trashItem.x = 0;  
+                trashItem.imageIndex = Math.floor(Math.random() * trashImages.length);
             }
             
             // Only check collision if not invincible
-            if (!isInvincible && Math.abs((franklinX + 50) - (square.x + 50)) < 50 && Math.abs((franklinY + 50) - (square.y + 50)) < 50) {
+            if (!isInvincible && Math.abs((franklinX + 50) - (trashItem.x + 50)) < 50 && Math.abs((franklinY + 50) - (trashItem.y + 50)) < 50) {
                 lives--;
                 lifeDisplay.textContent = `Lives: ${lives}`;
                 franklinX = canvas.width / 2 - 50;
