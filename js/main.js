@@ -56,6 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
         keysPressed[e.key.toLowerCase()] = false;
     });
 
+
+    let lives = 3;
+    const lifeDisplay = document.getElementById("lives");
     function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -72,6 +75,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (square.x <= 0 || square.x + square.width >= canvas.width) {
                 square.x = 0;  
                 square.imageIndex = Math.floor(Math.random() * trashImages.length);
+            }
+            if (Math.abs((franklinX + 50) - (square.x + 50)) < 50 && Math.abs((franklinY + 50) - (square.y + 50)) < 50) {
+                lives--;
+                lifeDisplay.textContent = `Lives: ${lives}`;
+                franklinX = canvas.width / 2 - 50;
+                franklinY = canvas.height - 120;
+            if (lives <= 0) {
+                window.location.href = "gameover.html";
+        }
             }
         });
 
