@@ -61,6 +61,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function createWavePattern(id, x, y, speedX=2) {
+        return {
+            id: id,
+            x: x,
+            y: y,
+            speedX: speedX,
+            speedY: 0,
+            width: 100,
+            height: canvas.height,
+        };
+    }
+
+    let waves = [];
+    waves.push(createWavePattern(0, 0, 1));
+    function drawWaves() {
+        ctx.fillStyle = "#ADD8E6";
+        waves.forEach(wave => {
+            ctx.fillRect(wave.x, wave.y, wave.width, wave.height);
+        });
+    }
+
+
     let franklinX = canvas.width / 2 - 50;
     let franklinY = canvas.height - 120;
     
@@ -108,8 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
         trash.forEach(trashItem => {
             trashItem.x += deltaSpeedX;
 
-            if (trashItem.x <= 0 || trashItem.x + trashItem.width >= canvas.width) {
-                trashItem.x = 0;  
+            if (trashItem.x + trashItem.width >= canvas.width) {
+                trashItem.x = 0 - Math.random() * 200;  
+                trashItem.y = Math.random() * (canvas.height - trashItem.height);
                 trashItem.imageIndex = Math.floor(Math.random() * trashImages.length);
             }
             
@@ -143,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
         shrimps.forEach((shrimp, index) => {
             shrimp.x += deltaSpeedX;
             if (shrimp.x > canvas.width) {
-                shrimp.x = 0;
+                shrimp.x = 0 - Math.random() * 200;
                 shrimp.y = Math.random() * (canvas.height - shrimp.height);
             }
             if (Math.abs((franklinX + 50) - (shrimp.x + 25)) < 50 && Math.abs((franklinY + 50) - (shrimp.y + 25)) < 50) {
@@ -154,15 +177,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 shrimps.push(createShrimp(0, Math.random() * (canvas.height - 50)));
             }
         });
-    
+        
+        waves.forEach(wave => {
+            wave.x += deltaSpeedX;  
+            if (wave.x >= canvas.width) {
+                wave.x = 0 - wave.width;  
+            }
+        });
 
         if (franklinX < 0) franklinX = 0;
         if (franklinX + 100 > canvas.width) franklinX = canvas.width - 100;
         if (franklinY < 0) franklinY = 0;
         if (franklinY + 100 > canvas.height) franklinY = canvas.height - 100;
+        
+        const waveLeft = waves[0].x;
+        const waveRight = waves[0].x + waves[0].width;
+        if (franklinX + 100 > waveLeft && franklinX < waveRight) {
+            franklinX = waveLeft - 100; 
+        }
 
         drawTrash();
         drawShrimps();
+        drawWaves();
         requestAnimationFrame(main);
     }
 
