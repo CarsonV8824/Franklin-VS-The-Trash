@@ -10,7 +10,7 @@ Franklin VS The Trash is a game inspired by a Missouri Hacks submission. It expa
 
 ### Installation
 ```bash
-git clone https://github.com/yourusername/Franklin-VS-The-Trash.git
+git clone https://github.com/CarsonV8824/Franklin-VS-The-Trash.git
 cd Franklin-VS-The-Trash
 npm install
 ```
